@@ -4,15 +4,13 @@ import numpy as np
 import torch
 import pickle
 import pandas as pd
-from pysc2.lib.remote_controller import ConnectError, RequestError
-from pysc2.lib.protocol import ProtocolError
-
+from pysc2.lib.remote_controller import ConnectError
 
 # lr 5e -4, max_grad 10, 층하나 더많듬
-regularizer = 1.3
+regularizer = 1.5
 map_name = '6h_vs_8z'
-reward_save_path = 'reward_{}_regularizer_{}_not_one_by_n.csv'.format(map_name, regularizer)
-win_rate_save_path = 'win_rate_{}_regularizer_{}_not_one_by_n.csv'.format(map_name, regularizer)
+reward_save_path = 'reward_{}_regularizer_{}.csv'.format(map_name, regularizer)
+win_rate_save_path = 'win_rate_{}_regularizer_{}.csv'.format(map_name, regularizer)
 
 
 
@@ -106,7 +104,7 @@ def main():
                 agent.memory(obs, state, action, reward, avail_action, done, padding, obs_next, state_next,
                              avail_action_next, last_action)
 
-            loss = agent.learn(e, variance = True, regularizer = regularizer)
+            loss = agent.learn(e, variance = True, regularizer = 0.8)
             print("Total reward in episode {} = {}, loss : {}, epsilon : {}, time_step : {}".format(e, episode_reward,
                                                                                                     loss.item(),
                                                                                                     epsilon, t))
@@ -170,7 +168,7 @@ def main():
                 wr.to_csv(win_rate_save_path)
 
 
-    except :
+    except ConnectError as CE:
         env.close()
         agent.buffer.episode_indices.pop()
         agent.buffer.episode_idx -=1
@@ -258,7 +256,7 @@ def main2(agent, epsilon, t, ep, epi_r, win_rates):
                 agent.memory(obs, state, action, reward, avail_action, done, padding, obs_next, state_next,
                              avail_action_next, last_action)
 
-            loss = agent.learn(e, variance = True, regularizer = regularizer)
+            loss = agent.learn(e, variance = True, regularizer = 0.8)
             print("Total reward in episode {} = {}, loss : {}, epsilon : {}, time_step : {}".format(e, episode_reward,
                                                                                                     loss.item(),
                                                                                                     epsilon, t))
@@ -307,7 +305,8 @@ def main2(agent, epsilon, t, ep, epi_r, win_rates):
                 wr = pd.DataFrame(win_rates)
                 wr.to_csv(win_rate_save_path)
 
-    except :
+
+    except ConnectError as CE:
         env.close()
         agent.buffer.episode_indices.pop()
         agent.buffer.episode_idx -=1

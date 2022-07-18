@@ -9,7 +9,7 @@ from pysc2.lib.protocol import ProtocolError
 
 
 # lr 5e -4, max_grad 10, 층하나 더많듬
-regularizer = 1.3
+regularizer = 1.6
 map_name = '6h_vs_8z'
 reward_save_path = 'reward_{}_regularizer_{}_not_one_by_n.csv'.format(map_name, regularizer)
 win_rate_save_path = 'win_rate_{}_regularizer_{}_not_one_by_n.csv'.format(map_name, regularizer)
