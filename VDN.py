@@ -21,14 +21,19 @@ class VDN(nn.Module):
 class Network(nn.Module):
     def __init__(self, obs_size, action_size, hidden_size):
         super(Network, self).__init__()
+        torch.manual_seed(123)
         self.fcn_1 = nn.Linear(obs_size, hidden_size)
         self.rnn = nn.GRU(hidden_size, hidden_size, batch_first = True)
         self.fcn_2 = nn.Linear(hidden_size, action_size)
+        torch.nn.init.xavier_uniform_(self.fcn_1.weight)
+        torch.nn.init.xavier_uniform_(self.fcn_2.weight)
 
     def forward(self, obs, hidden_state):
         x = F.relu(self.fcn_1(obs))
         out, h = self.rnn(x, hidden_state)
         q = self.fcn_2(out)
+
+
         return q, h
 
 class Replay_Buffer_for_RNN:
